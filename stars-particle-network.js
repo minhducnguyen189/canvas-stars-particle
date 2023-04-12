@@ -33,11 +33,11 @@
     this.use_opacity = parent.options.useOpacity;
     this.opacity_status == true;
     this.opacity_value = parent.options.opacityValue * Math.random();
-    this.opacity = 1;
+    this.opacity = Math.random();
     this.opacity_min = parent.options.opacityMin;
     this.change_size = parent.options.changeSize;
     this.size_status == true;
-    this.radius = 1;
+    this.radius =  Math.random();
     this.size_min = parent.options.sizeMin;
     this.size = parent.options.size * Math.random();
 
@@ -119,7 +119,7 @@
       opacityMin: (options.opacityValue !== undefined) ? options.opacityValue : 0,
       useOpacity: (options.useOpacity !== undefined) ? options.useOpacity : false,
       changeSize: (options.changeSize !== undefined) ? options.changeSize : false,
-      size: (options.size !== undefined) ? options.size : 3,
+      size: (options.size !== undefined) ? options.size : 2.98927153781200905,
       sizeMin: (options.sizeMin !== undefined) ? options.sizeMin : 0
     };
 
@@ -300,6 +300,9 @@
   ParticleNetwork.prototype.setDensity = function (density) {
     if (density === 'high') {
       return 1000;
+    }
+    else if (density === 'medium') {
+      return 5000;
     }
     else if (density === 'low') {
       return 20000;
