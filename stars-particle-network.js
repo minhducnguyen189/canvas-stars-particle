@@ -30,6 +30,10 @@
     this.canvas = parent.canvas;
     this.ctx = parent.ctx;
     this.particleColor = parent.options.particleColor;
+    this.isRandomColor = parent.options.isRandomColor;
+    if (this.isRandomColor) {
+      this.particleColor = generateRandomColor();
+    }
     this.use_opacity = parent.options.useOpacity;
     this.opacity_status == true;
     this.opacity_value = parent.options.opacityValue * Math.random();
@@ -116,11 +120,12 @@
       velocity: this.setVelocity(options.speed),
       density: this.setDensity(options.density),
       opacityValue: (options.opacityValue !== undefined) ? options.opacityValue : 0.98927153781200905,
-      opacityMin: (options.opacityValue !== undefined) ? options.opacityValue : 0,
+      opacityMin: (options.opacityValue !== undefined) ? options.opacityValue : 0.5,
       useOpacity: (options.useOpacity !== undefined) ? options.useOpacity : false,
       changeSize: (options.changeSize !== undefined) ? options.changeSize : false,
       size: (options.size !== undefined) ? options.size : 2.98927153781200905,
-      sizeMin: (options.sizeMin !== undefined) ? options.sizeMin : 0
+      sizeMin: (options.sizeMin !== undefined) ? options.sizeMin : 0.8,
+      isRandomColor: (options.interactive !== undefined) ? options.isRandomColor : false,
     };
 
     this.init();
@@ -334,6 +339,46 @@
     const alpha = hasAlpha ? `, ${hex & 0x000000ff}` : "";
 
     return `rgba(${red}, ${green}, ${blue}${alpha}, ${opacity})`;
+  }
+
+  // helper method to generate randomeColor
+  function generateRandomColor() {
+    var color = "#";
+    var lightRange = "CDEF";
+    var darkRange = "012345";
+    var possibleChars = "0123456789ABCDEF";
+    var i;
+
+    do {
+      color = "#";
+      for (i = 0; i < 6; i++) {
+        var possibleCharsForThisIndex = possibleChars;
+
+        if (i == 0) {
+          // First char can't be in the light range
+          possibleCharsForThisIndex = possibleCharsForThisIndex.replace(lightRange, "");
+        } else if (i % 2 == 1) {
+          // Odd index chars can't be in the dark range
+          possibleCharsForThisIndex = possibleCharsForThisIndex.replace(darkRange, "");
+        }
+
+        var randomChar = possibleCharsForThisIndex.charAt(Math.floor(Math.random() * possibleCharsForThisIndex.length));
+        color += randomChar;
+      }
+    } while (isTooLightOrDark(color));
+
+    return color;
+  }
+
+  function isTooLightOrDark(color) {
+    // Calculate relative luminance using ITU-R BT.709 formula
+    var r = parseInt(color.substr(1, 2), 16) / 255;
+    var g = parseInt(color.substr(3, 2), 16) / 255;
+    var b = parseInt(color.substr(5, 2), 16) / 255;
+    var luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+    // Color is too light if luminance > 0.7, or too dark if luminance < 0.3
+    return luminance > 0.7 || luminance < 0.3;
   }
 
 
